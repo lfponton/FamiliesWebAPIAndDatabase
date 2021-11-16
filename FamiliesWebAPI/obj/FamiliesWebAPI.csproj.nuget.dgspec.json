@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\lfpon\\RiderProjects\\FamiliesWebAPI\\FamiliesWebAPI\\FamiliesWebAPI.csproj": {}
+    "C:\\Users\\lfpon\\RiderProjects\\FamiliesWebAPIAndDatabase\\FamiliesWebAPI\\FamiliesWebAPI.csproj": {}
   },
   "projects": {
-    "C:\\Users\\lfpon\\RiderProjects\\FamiliesWebAPI\\FamiliesWebAPI\\FamiliesWebAPI.csproj": {
+    "C:\\Users\\lfpon\\RiderProjects\\FamiliesWebAPIAndDatabase\\FamiliesWebAPI\\FamiliesWebAPI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\lfpon\\RiderProjects\\FamiliesWebAPI\\FamiliesWebAPI\\FamiliesWebAPI.csproj",
+        "projectUniqueName": "C:\\Users\\lfpon\\RiderProjects\\FamiliesWebAPIAndDatabase\\FamiliesWebAPI\\FamiliesWebAPI.csproj",
         "projectName": "FamiliesWebAPI",
-        "projectPath": "C:\\Users\\lfpon\\RiderProjects\\FamiliesWebAPI\\FamiliesWebAPI\\FamiliesWebAPI.csproj",
+        "projectPath": "C:\\Users\\lfpon\\RiderProjects\\FamiliesWebAPIAndDatabase\\FamiliesWebAPI\\FamiliesWebAPI.csproj",
         "packagesPath": "C:\\Users\\lfpon\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\lfpon\\RiderProjects\\FamiliesWebAPI\\FamiliesWebAPI\\obj\\",
+        "outputPath": "C:\\Users\\lfpon\\RiderProjects\\FamiliesWebAPIAndDatabase\\FamiliesWebAPI\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\lfpon\\AppData\\Roaming\\NuGet\\NuGet.Config",

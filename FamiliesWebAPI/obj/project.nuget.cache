@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "HtyjqFxtNZEJftmlwAEzyCZ0svxW4NMfFLhaFQ9ALoTsUjtbXE6W2zxgELlssOS2gBBCG+8AuIxc1KZQjC391g==",
+  "dgSpecHash": "ICJBURvp2fg93poFryjJzh0dlAF61RItwdHyV1NOIkCa9E+oN/4TrCf7RQei0wbiyOQiVl3l7CrTsXwOdNkrwg==",
   "success": true,
-  "projectFilePath": "C:\\Users\\lfpon\\RiderProjects\\FamiliesWebAPI\\FamiliesWebAPI\\FamiliesWebAPI.csproj",
+  "projectFilePath": "C:\\Users\\lfpon\\RiderProjects\\FamiliesWebAPIAndDatabase\\FamiliesWebAPI\\FamiliesWebAPI.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\lfpon\\.nuget\\packages\\microsoft.extensions.apidescription.server\\3.0.0\\microsoft.extensions.apidescription.server.3.0.0.nupkg.sha512",
     "C:\\Users\\lfpon\\.nuget\\packages\\microsoft.openapi\\1.2.3\\microsoft.openapi.1.2.3.nupkg.sha512",
