@@ -10,6 +10,6 @@ namespace FamiliesWebAPI.Data
         Task<Child> AddChildAsync(int familyId, Child child);
         Task RemoveChildAsync(int familyId, int id);
         Task<Child> UpdateChildAsync(int familyId, Child child);
-        IList<Child> GetFamilyChildren(int? familyId);
+        Task<IList<Child>> GetFamilyChildrenAsync(int? familyId);
     }
 }

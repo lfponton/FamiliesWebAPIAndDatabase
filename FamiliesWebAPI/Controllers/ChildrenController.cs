@@ -26,7 +26,7 @@ namespace FamiliesWebAPI.Controllers
                 IList<Child> children = await childrenService.GetChildrenAsync();
                 if (familyId != null)
                 {
-                    children = childrenService.GetFamilyChildren(familyId);
+                    children = await childrenService.GetFamilyChildrenAsync(familyId);
                 }
                 return Ok(children);
             }

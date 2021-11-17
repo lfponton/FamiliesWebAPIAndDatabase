@@ -10,7 +10,7 @@ namespace FamiliesWebAPI.Data
         Task<Pet> AddPetAsync(int familyId, Pet pet);
         Task RemovePetAsync(int familyId, int id);
         Task<Pet> UpdatePetAsync(int familyId, Pet pet);
-        IList<Pet> getFamilyPets(int? familyId);
+        Task<IList<Pet>> GetFamilyPetsAsync(int? familyId);
 
     }
 }

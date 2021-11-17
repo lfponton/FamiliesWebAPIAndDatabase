@@ -12,6 +12,6 @@ namespace FamiliesWebAPI.Data
         Task RemoveFamilyAsync(int id);
         Task<Family> UpdateFamilyAsync(Family family);
 
-        Family GetFamilyById(int? id);
+        Task<Family> GetFamilyByIdAsync(int? id);
     }
 }

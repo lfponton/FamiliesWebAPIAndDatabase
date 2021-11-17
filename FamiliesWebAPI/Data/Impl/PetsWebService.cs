@@ -32,7 +32,7 @@ namespace FamiliesWebAPI.Data.Impl
         public async Task<Pet> AddPetAsync(int familyId, Pet pet)
         {
             Pets.Add(pet);
-            Family family = familiesService.GetFamilyById(familyId);
+            Family family = await familiesService.GetFamilyByIdAsync(familyId);
             family.Pets.Add(pet);
             await familiesService.UpdateFamilyAsync(family);
             return pet;
@@ -42,7 +42,7 @@ namespace FamiliesWebAPI.Data.Impl
         {
             Pet toRemove = Pets.First(p => p.Id == id);
             Pets.Remove(toRemove);
-            Family family = familiesService.GetFamilyById(familyId);
+            Family family = await familiesService.GetFamilyByIdAsync(familyId);
             family.Pets.Remove(toRemove);
             await familiesService.UpdateFamilyAsync(family);
         }
@@ -53,14 +53,15 @@ namespace FamiliesWebAPI.Data.Impl
             toUpdate.Species = pet.Species;
             toUpdate.Name = pet.Name;
             toUpdate.Age = pet.Age;
-            await familiesService.UpdateFamilyAsync(familiesService.GetFamilyById(familyId));
+            await familiesService.UpdateFamilyAsync(await familiesService.GetFamilyByIdAsync(familyId));
             return toUpdate;
         }
 
-        public IList<Pet> getFamilyPets(int? familyId)
+        public async Task<IList<Pet>> GetFamilyPetsAsync(int? familyId)
         {
             IList<Pet> pets = new List<Pet>();
-            foreach (var p in familiesService.GetFamilyById(familyId).Pets)
+            Family family = await familiesService.GetFamilyByIdAsync(familyId);
+            foreach (var p in family.Pets)
             {
                 pets.Add(p);
             }

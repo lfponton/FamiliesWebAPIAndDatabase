@@ -30,7 +30,7 @@ namespace FamiliesWebAPI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddSingleton<IFileContext, FileContext>();
+            services.AddDbContext<FamiliesContext>();
             services.AddSingleton<IFamiliesService, FamiliesWebService>();
             services.AddSingleton<IAdultsService, AdultsWebService>();
             services.AddSingleton<IChildrenService, ChildrenWebService>();

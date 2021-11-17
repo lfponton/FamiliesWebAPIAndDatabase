@@ -26,7 +26,7 @@ namespace FamiliesWebAPI.Controllers
                 IList<Pet> pets = await petsService.GetPetsAsync();
                 if (familyId != null)
                 {
-                    pets = petsService.getFamilyPets(familyId);
+                    pets = await petsService.GetFamilyPetsAsync(familyId);
                 }
                 return Ok(pets);
             }

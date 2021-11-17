@@ -1,74 +1,67 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using FamiliesWebAPI.Models;
 using FamiliesWebAPI.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace FamiliesWebAPI.Data.Impl
 {
     public class FamiliesWebService : IFamiliesService
     {
-        private IFileContext fileContext;
-        private IList<Family> Families { get; }
-
-        public FamiliesWebService(IFileContext fileContext)
+        public FamiliesWebService()
         {
-            this.fileContext = fileContext;
-            Families = new List<Family>();
-            int maxId;
-            foreach (var f in fileContext.Families)
-            {
-                if (!Families.Any())
-                {
-                    f.Id = 1;
-                }
-                else
-                {
-                    maxId = Families.Max(f => f.Id);
-                    f.Id = (++maxId);
-                }
-
-                Families.Add(f);
-            }
         }
 
         public async Task<IList<Family>> GetFamiliesAsync()
         {
-            return Families;
+            await using var familiesContext = new FamiliesContext();
+            return await familiesContext.Families.ToListAsync();
         }
 
         public async Task<Family> AddFamilyAsync(Family family)
         {
-            Families.Add(family);
-            fileContext.Families = Families;
-            fileContext.SaveChanges();
+            await using var familiesContext = new FamiliesContext();
+            await familiesContext.Families.AddAsync(family);
+            await familiesContext.SaveChangesAsync();
             return family;
         }
 
         public async Task RemoveFamilyAsync(int id)
         {
-            Family toRemove = Families.First(f => f.Id == id);
-            Families.Remove(toRemove);
-            fileContext.Families = Families;
-            fileContext.SaveChanges();
+            await using var familiesContext = new FamiliesContext();
+            var toDelete = await familiesContext.Families.FirstOrDefaultAsync(f => f.Id == id);
+            if (toDelete != null)
+            {
+                familiesContext.Families.Remove(toDelete);
+                await familiesContext.SaveChangesAsync();
+            }
         }
 
         public async Task<Family> UpdateFamilyAsync(Family family)
         {
-            Family toUpdate = Families.First(f => f.Id == family.Id);
-            toUpdate.StreetName = family.StreetName;
-            toUpdate.HouseNumber = family.HouseNumber;
-            toUpdate.Adults = family.Adults;
-            toUpdate.Children = family.Children;
-            toUpdate.Pets = family.Pets;
-            fileContext.Families = Families;
-            fileContext.SaveChanges();
-            return toUpdate;
+            await using var familiesContext = new FamiliesContext();
+            try
+            {
+                var toUpdate = await familiesContext.Families.FirstAsync(f => f.Id == family.Id);
+                toUpdate.StreetName = family.StreetName;
+                toUpdate.HouseNumber = family.HouseNumber;
+                toUpdate.Adults = family.Adults;
+                toUpdate.Children = family.Children;
+                toUpdate.Pets = family.Pets;
+                await familiesContext.SaveChangesAsync();
+                return toUpdate;
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"Could not find family with id {family.Id}");
+            }
         }
 
-        public Family GetFamilyById(int? id)
+        public async Task<Family> GetFamilyByIdAsync(int? id)
         {
-            return Families.FirstOrDefault(f => f.Id == id);
+            await using var familiesContext = new FamiliesContext();
+            return await familiesContext.Families.FirstOrDefaultAsync(f => f.Id == id);
         }
     }
 }

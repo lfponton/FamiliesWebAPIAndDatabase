@@ -1,5 +1,5 @@
 namespace FamiliesWebAPI.Models {
     public class Adult : Person {
-        public Job JobTitle { get; set; }
+        public Job Job { get; set; }
     }
 }

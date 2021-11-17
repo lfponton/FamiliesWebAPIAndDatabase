@@ -32,7 +32,7 @@ namespace FamiliesWebAPI.Data.Impl
         public async Task<Child> AddChildAsync(int familyId, Child child)
         {
             Children.Add(child);
-            Family family = familiesService.GetFamilyById(familyId);
+            Family family = await familiesService.GetFamilyByIdAsync(familyId);
             family.Children.Add(child);
             await familiesService.UpdateFamilyAsync(family);
             return child;
@@ -42,7 +42,7 @@ namespace FamiliesWebAPI.Data.Impl
         {
             Child toRemove = Children.First(c => c.Id == id);
             Children.Remove(toRemove);
-            Family family = familiesService.GetFamilyById(familyId);
+            Family family = await familiesService.GetFamilyByIdAsync(familyId);
             family.Children.Remove(toRemove);
             await familiesService.UpdateFamilyAsync(family);
         }
@@ -60,14 +60,15 @@ namespace FamiliesWebAPI.Data.Impl
             toUpdate.HairColor = child.HairColor;
             toUpdate.FirstName = child.FirstName;
             toUpdate.LastName = child.LastName;
-            familiesService.UpdateFamilyAsync(familiesService.GetFamilyById(familyId));
+            await familiesService.UpdateFamilyAsync(await familiesService.GetFamilyByIdAsync(familyId));
             return toUpdate;
         }
         
-        public IList<Child> GetFamilyChildren(int? familyId)
+        public async Task<IList<Child>> GetFamilyChildrenAsync(int? familyId)
         {
             IList<Child> children = new List<Child>();
-            foreach (var c in familiesService.GetFamilyById(familyId).Children)
+            Family family = await familiesService.GetFamilyByIdAsync(familyId);
+            foreach (var c in family.Children)
             {
                 children.Add(c);
             }

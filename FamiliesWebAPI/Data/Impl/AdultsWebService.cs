@@ -32,7 +32,7 @@ namespace FamiliesWebAPI.Data.Impl
         public async Task<Adult> AddAdultAsync(int familyId, Adult adult)
         {
             Adults.Add(adult);
-            Family family = familiesService.GetFamilyById(familyId);
+            Family family = await familiesService.GetFamilyByIdAsync(familyId);
             family.Adults.Add(adult);
             await familiesService.UpdateFamilyAsync(family);
             return adult;
@@ -42,7 +42,7 @@ namespace FamiliesWebAPI.Data.Impl
         {
             Adult toRemove = Adults.First(a => a.Id == id);
             Adults.Remove(toRemove);
-            Family family = familiesService.GetFamilyById(familyId);
+            Family family = await familiesService.GetFamilyByIdAsync(familyId);
             family.Adults.Remove(toRemove);
             await familiesService.UpdateFamilyAsync(family);
         }
@@ -50,7 +50,7 @@ namespace FamiliesWebAPI.Data.Impl
         public async Task<Adult> UpdateAdultAsync(int familyId, Adult adult)
         {
             Adult toUpdate = Adults.First(a => a.Id == adult.Id);
-            toUpdate.JobTitle = adult.JobTitle;
+            toUpdate.Job = adult.Job;
             toUpdate.Age = adult.Age;
             toUpdate.Height = adult.Height;
             toUpdate.Sex = adult.Sex;
@@ -59,14 +59,15 @@ namespace FamiliesWebAPI.Data.Impl
             toUpdate.HairColor = adult.HairColor;
             toUpdate.FirstName = adult.FirstName;
             toUpdate.LastName = adult.LastName;
-            await familiesService.UpdateFamilyAsync(familiesService.GetFamilyById(familyId));
+            await familiesService.UpdateFamilyAsync(await familiesService.GetFamilyByIdAsync(familyId));
             return toUpdate;
         }
 
-        public IList<Adult> GetFamilyAdults(int? familyId)
+        public async Task<IList<Adult>> GetFamilyAdultsAsync(int? familyId)
         {
             IList<Adult> adults = new List<Adult>();
-            foreach (var a in familiesService.GetFamilyById(familyId).Adults)
+            Family family = await familiesService.GetFamilyByIdAsync(familyId);
+            foreach (var a in family.Adults)
             {
                 adults.Add(a);
             }
