@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using FamiliesWebAPI.Data.Impl;
 using FamiliesWebAPI.DataGenerator;
 using FamiliesWebAPI.Models;
+using FamiliesWebAPI.Persistence;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
@@ -9,15 +12,25 @@ namespace FamiliesWebAPI
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public async static Task Main(string[] args)
         {
             Console.WriteLine("Hello");
             var families = new DataGenerator.DataGenerator().GenerateFamilies(500);
-            foreach (var family in families)
-            {
-                Console.WriteLine(family.Id);
-            }
             DbSeeder.Seed(families);
+
+            var familiesWebService = new FamiliesWebService();
+            var allFamilies = await familiesWebService.GetFamiliesAsync();
+          /*  foreach (var family in allFamilies)
+            {
+                Console.WriteLine("FamilyId");
+                Console.WriteLine(family.Id);
+                foreach (var adult in family.Adults)
+                {
+                    Console.WriteLine("AdultIds");
+                    Console.WriteLine(adult.Id);
+                }
+            }*/
+            
             CreateHostBuilder(args).Build().Run();
             
         }

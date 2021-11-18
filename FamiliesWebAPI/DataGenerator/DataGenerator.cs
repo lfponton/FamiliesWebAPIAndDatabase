@@ -553,8 +553,8 @@ namespace FamiliesWebAPI.DataGenerator
             // a.Id = adultId;
             a.Age = rand.Next(ageRange[1] - ageRange[0]) + ageRange[0];
             a.Sex = rand.Next(2) == 0 ? "F" : "M";
-            //a.Job.JobTitle = JobTitles.list[rand.Next(JobTitles.list.Length)];
-            //a.Job.Salary = rand.Next(20000, 100000);
+            a.Job.JobTitle = JobTitles.list[rand.Next(JobTitles.list.Length)];
+            a.Job.Salary = rand.Next(20000, 100000);
             a.Height = GenerateAdultHeight(a.Sex);
             a.EyeColor = GenerateEyeColor(new List<Adult>()).ToString();
             a.Weight = GenerateWeight(a.Height);

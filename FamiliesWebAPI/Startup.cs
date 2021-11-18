@@ -31,10 +31,10 @@ namespace FamiliesWebAPI
         {
             services.AddControllers();
             services.AddDbContext<FamiliesContext>();
-            services.AddSingleton<IFamiliesService, FamiliesWebService>();
-            services.AddSingleton<IAdultsService, AdultsWebService>();
-            services.AddSingleton<IChildrenService, ChildrenWebService>();
-            services.AddSingleton<IPetsService, PetsWebService>();
+            services.AddScoped<IFamiliesService, FamiliesWebService>();
+            services.AddScoped<IAdultsService, AdultsWebService>();
+            services.AddScoped<IChildrenService, ChildrenWebService>();
+            services.AddScoped<IPetsService, PetsWebService>();
             services.AddScoped<IUserService, WebUserService>();
             services.AddSwaggerGen(c =>
             {

@@ -16,7 +16,10 @@ namespace FamiliesWebAPI.Data.Impl
         public async Task<IList<Family>> GetFamiliesAsync()
         {
             await using var familiesContext = new FamiliesContext();
-            return await familiesContext.Families.ToListAsync();
+            return await familiesContext.Families
+                .Include(f => f.Adults)
+                .Include(f => f.Children)
+                .Include(f => f.Pets).ToListAsync();
         }
 
         public async Task<Family> AddFamilyAsync(Family family)
@@ -41,27 +44,27 @@ namespace FamiliesWebAPI.Data.Impl
         public async Task<Family> UpdateFamilyAsync(Family family)
         {
             await using var familiesContext = new FamiliesContext();
-            try
-            {
-                var toUpdate = await familiesContext.Families.FirstAsync(f => f.Id == family.Id);
-                toUpdate.StreetName = family.StreetName;
-                toUpdate.HouseNumber = family.HouseNumber;
-                toUpdate.Adults = family.Adults;
-                toUpdate.Children = family.Children;
-                toUpdate.Pets = family.Pets;
-                await familiesContext.SaveChangesAsync();
-                return toUpdate;
-            }
-            catch (Exception e)
-            {
-                throw new Exception($"Could not find family with id {family.Id}");
-            }
+            var toUpdate = await familiesContext.Families.Include(f => f.Adults)
+                .Include(f => f.Children)
+                .Include(f => f.Pets)
+                .FirstAsync(f => f.Id == family.Id);
+            toUpdate.StreetName = family.StreetName;
+            toUpdate.HouseNumber = family.HouseNumber;
+            toUpdate.Adults = family.Adults;
+            toUpdate.Children = family.Children;
+            toUpdate.Pets = family.Pets;
+            familiesContext.Update(toUpdate);
+            await familiesContext.SaveChangesAsync();
+            return toUpdate;
         }
 
         public async Task<Family> GetFamilyByIdAsync(int? id)
         {
             await using var familiesContext = new FamiliesContext();
-            return await familiesContext.Families.FirstOrDefaultAsync(f => f.Id == id);
+            return await familiesContext.Families
+                .Include(f => f.Adults)
+                .Include(f => f.Children)
+                .Include(f => f.Pets).FirstOrDefaultAsync(f => f.Id == id);
         }
     }
 }

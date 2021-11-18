@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text.Json;
 
 namespace FamiliesWebAPI.Models {
 public class Family {
@@ -14,6 +15,14 @@ public class Family {
         Adults = new List<Adult>();     
         Children = new List<Child>();     
         Pets = new List<Pet>();     
+    }
+    
+    public override string ToString()
+    {
+        return JsonSerializer.Serialize(this, new JsonSerializerOptions
+        {
+            WriteIndented = true
+        });
     }
 }
 
