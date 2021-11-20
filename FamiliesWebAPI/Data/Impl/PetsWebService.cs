@@ -1,71 +1,71 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FamiliesWebAPI.Models;
+using FamiliesWebAPI.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace FamiliesWebAPI.Data.Impl
 {
     public class PetsWebService : IPetsService
     {
-        public IList<Pet> Pets { get; private set; }
-        private readonly IFamiliesService familiesService;
-
-        public PetsWebService(IFamiliesService familiesService)
+        public PetsWebService()
         {
-            this.familiesService = familiesService;
-            GetPetsAsync();
         }
         
         public async Task<IList<Pet>> GetPetsAsync()
         {
-            Pets = new List<Pet>();
-            foreach (var family in await familiesService.GetFamiliesAsync())
-            {
-                foreach (var pet in family.Pets)
-                {
-                    Pets.Add(pet);
-                }
-            }
-            return Pets;
+            await using var familiesContext = new FamiliesContext();
+            return await familiesContext.Pets.ToListAsync();;
         }
 
         public async Task<Pet> AddPetAsync(int familyId, Pet pet)
         {
-            Pets.Add(pet);
-            Family family = await familiesService.GetFamilyByIdAsync(familyId);
+            await using var familiesContext = new FamiliesContext();
+            var family = await familiesContext.Families
+                .Include(f => f.Adults)
+                .Include(f =>f.Children)
+                .Include(f=>f.Pets)
+                .FirstAsync(f => f.Id == familyId);
+            
             family.Pets.Add(pet);
-            await familiesService.UpdateFamilyAsync(family);
+            familiesContext.Update(family);
+            await familiesContext.SaveChangesAsync();
             return pet;
         }
 
         public async Task RemovePetAsync(int familyId, int id)
         {
-            Pet toRemove = Pets.First(p => p.Id == id);
-            Pets.Remove(toRemove);
-            Family family = await familiesService.GetFamilyByIdAsync(familyId);
-            family.Pets.Remove(toRemove);
-            await familiesService.UpdateFamilyAsync(family);
+            await using var familiesContext = new FamiliesContext();
+            var toDelete = await familiesContext.Pets.FirstOrDefaultAsync(p => p.Id == id);
+            if (toDelete != null)
+            {
+                familiesContext.Pets.Remove(toDelete);
+                await familiesContext.SaveChangesAsync();
+            }
         }
 
         public async Task<Pet> UpdatePetAsync(int familyId, Pet pet)
         {
-            Pet toUpdate = Pets.First(p => p.Id == pet.Id);
+            await using var familiesContext = new FamiliesContext();
+            var toUpdate = await familiesContext.Pets
+                .FirstAsync(p => p.Id == pet.Id);
+
+            toUpdate.Age = pet.Age;
             toUpdate.Species = pet.Species;
             toUpdate.Name = pet.Name;
-            toUpdate.Age = pet.Age;
-            await familiesService.UpdateFamilyAsync(await familiesService.GetFamilyByIdAsync(familyId));
+            
+            familiesContext.Update(toUpdate);
+            await familiesContext.SaveChangesAsync();
             return toUpdate;
         }
 
         public async Task<IList<Pet>> GetFamilyPetsAsync(int? familyId)
         {
-            IList<Pet> pets = new List<Pet>();
-            Family family = await familiesService.GetFamilyByIdAsync(familyId);
-            foreach (var p in family.Pets)
-            {
-                pets.Add(p);
-            }
-            return pets;
+            await using var familiesContext = new FamiliesContext();
+            return await familiesContext.Pets
+                .Where(p => p.Family.Id == familyId).ToListAsync();
         }
     }
 }

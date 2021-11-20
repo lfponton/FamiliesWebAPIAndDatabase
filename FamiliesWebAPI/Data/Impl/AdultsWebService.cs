@@ -17,9 +17,7 @@ namespace FamiliesWebAPI.Data.Impl
         public async Task<IList<Adult>> GetAdultsAsync()
         {
             await using var familiesContext = new FamiliesContext();
-            List<Adult> adults = await familiesContext.Adults.Include(a => a.Job).ToListAsync();
-            Console.WriteLine(adults.Find(a => a.Id == 1)?.ToString());
-            return adults;
+            return await familiesContext.Adults.Include(a => a.Job).ToListAsync();;
         }
 
         public async Task<Adult> AddAdultAsync(int familyId, Adult adult)
@@ -30,7 +28,7 @@ namespace FamiliesWebAPI.Data.Impl
                 .Include(f =>f.Children)
                 .Include(f=>f.Pets)
                 .FirstAsync(f => f.Id == familyId);
-            //adult.Id = 0;
+            
             family.Adults.Add(adult);
             familiesContext.Update(family);
             await familiesContext.SaveChangesAsync();
@@ -57,7 +55,6 @@ namespace FamiliesWebAPI.Data.Impl
             jobToUpdate.JobTitle = adult.Job.JobTitle;
             jobToUpdate.Salary = adult.Job.Salary;
             
-            //toUpdate.Job = adult.Job;
             toUpdate.Age = adult.Age;
             toUpdate.Height = adult.Height;
             toUpdate.Sex = adult.Sex;

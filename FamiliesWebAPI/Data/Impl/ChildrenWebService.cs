@@ -1,55 +1,61 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FamiliesWebAPI.Models;
+using FamiliesWebAPI.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace FamiliesWebAPI.Data.Impl
 {
     public class ChildrenWebService : IChildrenService
     {
-        public IList<Child> Children { get; private set; }
-        private readonly IFamiliesService familiesService;
-
-        public ChildrenWebService(IFamiliesService familiesService)
+        public ChildrenWebService()
         {
-            this.familiesService = familiesService;
-            GetChildrenAsync();
         }
         
         public async Task<IList<Child>> GetChildrenAsync()
         {
-            Children = new List<Child>();
-            foreach (var family in await familiesService.GetFamiliesAsync())
-            {
-                foreach (var child in family.Children)
-                {
-                    Children.Add(child);
-                }
-            }
-            return Children;
+            await using var familiesContext = new FamiliesContext();
+            return await familiesContext.Children
+                .Include(c => c.Interests)
+                .Include(c => c.Pets).ToListAsync();;
         }
 
         public async Task<Child> AddChildAsync(int familyId, Child child)
         {
-            Children.Add(child);
-            Family family = await familiesService.GetFamilyByIdAsync(familyId);
+            await using var familiesContext = new FamiliesContext();
+            var family = await familiesContext.Families
+                .Include(f => f.Adults)
+                .Include(f =>f.Children)
+                .Include(f=>f.Pets)
+                .FirstAsync(f => f.Id == familyId);
+            
             family.Children.Add(child);
-            await familiesService.UpdateFamilyAsync(family);
+            familiesContext.Update(family);
+            await familiesContext.SaveChangesAsync();
             return child;
         }
 
         public async Task RemoveChildAsync(int familyId, int id)
         {
-            Child toRemove = Children.First(c => c.Id == id);
-            Children.Remove(toRemove);
-            Family family = await familiesService.GetFamilyByIdAsync(familyId);
-            family.Children.Remove(toRemove);
-            await familiesService.UpdateFamilyAsync(family);
+            await using var familiesContext = new FamiliesContext();
+            var toDelete = await familiesContext.Children.FirstOrDefaultAsync(c => c.Id == id);
+            if (toDelete != null)
+            {
+                familiesContext.Children.Remove(toDelete);
+                await familiesContext.SaveChangesAsync();
+            }
         }
 
         public async Task<Child> UpdateChildAsync(int familyId, Child child)
         {
-            Child toUpdate = Children.First(c => c.Id == child.Id);
+            await using var familiesContext = new FamiliesContext();
+            var toUpdate = await familiesContext.Children
+                .Include(c => c.Interests)
+                .Include(c => c.Pets)
+                .FirstAsync(c => c.Id == child.Id);
+            
             toUpdate.Interests = child.Interests;
             toUpdate.Pets = child.Pets;
             toUpdate.Age = child.Age;
@@ -60,40 +66,20 @@ namespace FamiliesWebAPI.Data.Impl
             toUpdate.HairColor = child.HairColor;
             toUpdate.FirstName = child.FirstName;
             toUpdate.LastName = child.LastName;
-            await familiesService.UpdateFamilyAsync(await familiesService.GetFamilyByIdAsync(familyId));
+            
+            familiesContext.Update(toUpdate);
+            await familiesContext.SaveChangesAsync();
             return toUpdate;
         }
         
         public async Task<IList<Child>> GetFamilyChildrenAsync(int? familyId)
         {
-            IList<Child> children = new List<Child>();
-            Family family = await familiesService.GetFamilyByIdAsync(familyId);
-            foreach (var c in family.Children)
-            {
-                children.Add(c);
-            }
-            return children;
+            await using var familiesContext = new FamiliesContext();
+            return await familiesContext.Children
+                .Include(c => c.Interests)
+                .Include(c => c.Pets)
+                .Where(a => a.Family.Id == familyId).ToListAsync();
         }
         
-        /*
-        public Child GetChild(int? id)
-        {
-            return Children.FirstOrDefault(c => c.Id == id);
-        }
-
-        private Family FindFamily(Child child)
-        {
-            Family familyToUpdate = null;
-            foreach (var family in familiesService.GetFamilies())
-            {
-                if (family.Children.Any(c => c.Id == child.Id))
-                {
-                    familyToUpdate = family;
-                    break;
-                }
-            }
-            return familyToUpdate;
-        }
-        */
     }
 }
